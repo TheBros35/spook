@@ -4,3 +4,4 @@ spook/__pycache__
 venv
 base/migrations
 db/db.sqlite3
+.venv
