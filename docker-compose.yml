@@ -1,11 +1,41 @@
----
 services:
   spook:
+    build: .
     image: thebros35/spook
-    volumes:
-      - spookVolume:/app/db
+    container_name: spook
     restart: unless-stopped
-    network_mode: 'host'
+
+    # IMPORTANT: Wake-on-LAN packets are sent as UDP broadcasts. Docker's default
+    # bridge network NATs traffic, so broadcasts sent by the container generally
+    # won't reach devices on your real LAN. Host networking makes the container
+    # share the host's network stack, so broadcasts go out on your actual LAN
+    # interface. This is the default here (Linux hosts only - host networking
+    # isn't supported on Docker Desktop for Mac/Windows; see the alternative
+    # below if that's you).
+    network_mode: host
+
+    environment:
+      DJANGO_DEBUG: "false"
+      DJANGO_ALLOWED_HOSTS: "*"
+      DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY:-please-change-this-secret-key}"
+      DJANGO_DATA_DIR: /app/data
+      TZ: "${TZ:-UTC}"
+      # Optional: auto-create a Django admin user on first boot.
+      # DJANGO_SUPERUSER_USERNAME: admin
+      # DJANGO_SUPERUSER_PASSWORD: change-me
+      # DJANGO_SUPERUSER_EMAIL: admin@example.com
+
+    volumes:
+      - spook-data:/app/data
+
+    # --- Alternative: bridge networking (Docker Desktop / Mac / Windows) ---
+    # network_mode: host isn't supported on Docker Desktop, so on Mac/Windows
+    # comment out "network_mode: host" above and uncomment the block below
+    # instead. Wake-on-LAN broadcasts may not reliably reach your physical LAN
+    # in this mode, but the web UI will still be reachable at localhost.
+    #
+    # ports:
+    #   - "4321:4321"
 
 volumes:
-  spookVolume:
+  spook-data:

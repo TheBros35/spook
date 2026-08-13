@@ -5,3 +5,10 @@ venv
 base/migrations
 db/db.sqlite3
 .venv
+__pycache__/
+*.pyc
+*.pyo
+db.sqlite3
+staticfiles/
+.env
+data/

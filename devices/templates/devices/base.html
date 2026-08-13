@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Spook{% endblock %}</title>
+<link href="{% static 'devices/fonts.css' %}" rel="stylesheet">
+<link href="{% static 'devices/styles.css' %}" rel="stylesheet">
+</head>
+<body>
+<div class="shell">
+  <header class="masthead">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div>
+        <h1>Spook</h1>
+        <div class="tagline">local device roster &middot; magic packet dispatch</div>
+      </div>
+    </div>
+    <div class="status-chip">Relay armed</div>
+  </header>
+
+  {% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  {% block content %}{% endblock %}
+
+  <footer>Packets are sent as local UDP broadcasts &mdash; the relay and target must share a network segment.</footer>
+</div>
+</body>
+</html>

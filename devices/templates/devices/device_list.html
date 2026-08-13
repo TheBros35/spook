@@ -1,0 +1,116 @@
+{% extends 'devices/base.html' %}
+
+{% block content %}
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>Roster &middot; {{ devices|length }} device{{ devices|length|pluralize }}</h2>
+  </div>
+  <div class="panel-body" style="padding:0;">
+    {% if devices %}
+      {% for device in devices %}
+        <div class="device-row">
+          <div>
+            <div class="device-name">{{ device.name }}</div>
+            <div class="device-meta">
+              {% if device.ip_address %}{{ device.ip_address }} &middot; {% endif %}
+              broadcast {{ device.broadcast_address }}:{{ device.port }}
+              {% if device.notes %} &middot; {{ device.notes }}{% endif %}
+            </div>
+          </div>
+
+          <div class="mac-chip" title="{{ device.mac_address }}">
+            <span>{{ device.mac_address|slice:"0:2" }}</span><span>{{ device.mac_address|slice:"3:5" }}</span><span>{{ device.mac_address|slice:"6:8" }}</span><span>{{ device.mac_address|slice:"9:11" }}</span><span>{{ device.mac_address|slice:"12:14" }}</span><span>{{ device.mac_address|slice:"15:17" }}</span>
+          </div>
+
+          <div class="last-woken">
+            {% if device.last_woken_at %}
+              last woken <span class="n">{{ device.last_woken_at|timesince }}</span> ago
+              &middot; <span class="n">{{ device.wake_count }}</span> send{{ device.wake_count|pluralize }}
+            {% else %}
+              never woken
+            {% endif %}
+          </div>
+
+          <div class="row-actions">
+            <form method="post" action="{% url 'device_wake' device.pk %}" class="wake-form">
+              {% csrf_token %}
+              <button type="submit" class="btn-wake">
+                <span class="dot"></span><span class="label">Wake</span>
+              </button>
+            </form>
+            <form method="post" action="{% url 'device_delete' device.pk %}"
+                  onsubmit="return confirm('Remove {{ device.name|escapejs }} from the roster?');">
+              {% csrf_token %}
+              <button type="submit" class="btn-ghost">Remove</button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        <span class="glyph">&#9679;&#9675;&#9679;</span>
+        No devices registered yet. Add one below to bring it onto the roster.
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>Register a device</h2>
+  </div>
+  <div class="panel-body">
+    <form method="post" action="{% url 'device_list' %}" novalidate>
+      {% csrf_token %}
+      <div class="form-grid">
+        <div class="field">
+          <label for="{{ form.name.id_for_label }}">Name</label>
+          {{ form.name }}
+          {{ form.name.errors }}
+        </div>
+        <div class="field">
+          <label for="{{ form.mac_address.id_for_label }}">MAC address</label>
+          {{ form.mac_address }}
+          {{ form.mac_address.errors }}
+        </div>
+        <div class="field">
+          <label for="{{ form.ip_address.id_for_label }}">IP address (optional)</label>
+          {{ form.ip_address }}
+          {{ form.ip_address.errors }}
+        </div>
+        <div class="field">
+          <label for="{{ form.broadcast_address.id_for_label }}">Broadcast address</label>
+          {{ form.broadcast_address }}
+          {{ form.broadcast_address.errors }}
+        </div>
+        <div class="field">
+          <label for="{{ form.port.id_for_label }}">UDP port</label>
+          {{ form.port }}
+          {{ form.port.errors }}
+        </div>
+        <div class="field full">
+          <label for="{{ form.notes.id_for_label }}">Notes (optional)</label>
+          {{ form.notes }}
+          {{ form.notes.errors }}
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn-primary">Save device</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll('.wake-form').forEach(function (form) {
+    form.addEventListener('submit', function () {
+      var btn = form.querySelector('.btn-wake');
+      btn.classList.add('sending');
+      btn.disabled = true;
+      var label = btn.querySelector('.label');
+      if (label) { label.textContent = 'Sending…'; }
+    });
+  });
+</script>
+{% endblock %}

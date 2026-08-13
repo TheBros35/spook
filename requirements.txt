@@ -1,2 +1,3 @@
-django
-wakeonlan
+Django
+gunicorn
+whitenoise
