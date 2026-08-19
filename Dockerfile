@@ -1,4 +1,4 @@
-FROM python:3.12-alpine
+FROM python:alpine
 
 # Prevent .pyc files and enable unbuffered stdout/stderr for clean logs
 ENV PYTHONDONTWRITEBYTECODE=1 \
