@@ -10,8 +10,16 @@ plus a production-mode run (gunicorn + whitenoise + collectstatic).
 ## Quick start (Docker, recommended)
 
 ```bash
+cp .env.example .env   # then edit .env - at minimum set DJANGO_SECRET_KEY
 docker compose up --build
 ```
+
+All configurable settings (secret key, debug mode, allowed hosts, time
+zone, gunicorn worker count, optional admin auto-creation) live in `.env`,
+which `docker-compose.yml` reads automatically. `.env` is gitignored so
+your real secret key never gets committed - `.env.example` is the
+template that's safe to commit. See the "Environment variables" table
+below for what each one does.
 
 Then visit **http://localhost:4321** (on Linux, this works because of the
 host networking described below; see the note if you're on Mac/Windows).
@@ -79,5 +87,7 @@ if you want Django's debug error pages.
 | `DJANGO_DEBUG` | `false` | Set `true` for Django debug pages |
 | `DJANGO_ALLOWED_HOSTS` | `*` | Comma-separated allowed hostnames |
 | `DJANGO_CSRF_TRUSTED_ORIGINS` | (empty) | Comma-separated origins, e.g. `https://wake.example.com` |
-| `DJANGO_DATA_DIR` | project root | Where `db.sqlite3` is stored (Docker sets `/app/data`) |
+| `DJANGO_DATA_DIR` | project root | Where `db.sqlite3` is stored (Docker sets `/app/data` - not meant to be changed via `.env` since it must match the volume mount) |
+| `TZ` | `UTC` | IANA time zone, e.g. `America/Indiana/Indianapolis`. Also feeds `DJANGO_TIME_ZONE` for displayed timestamps. |
 | `GUNICORN_WORKERS` | `3` | Worker process count for gunicorn |
+| `DJANGO_SUPERUSER_USERNAME` / `_PASSWORD` / `_EMAIL` | (empty) | Set all three (username + password required) to auto-create a Django admin user on first boot |

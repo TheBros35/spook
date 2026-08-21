@@ -14,16 +14,14 @@ services:
     # below if that's you).
     network_mode: host
 
+    # All configurable settings live in .env (copy .env.example to .env and
+    # edit it - see that file for descriptions of each variable).
+    env_file:
+      - .env
+
     environment:
-      DJANGO_DEBUG: "false"
-      DJANGO_ALLOWED_HOSTS: "*"
-      DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY:-please-change-this-secret-key}"
+      # Not meant to be set via .env - this must match the volume mount below.
       DJANGO_DATA_DIR: /app/data
-      TZ: "${TZ:-UTC}"
-      # Optional: auto-create a Django admin user on first boot.
-      # DJANGO_SUPERUSER_USERNAME: admin
-      # DJANGO_SUPERUSER_PASSWORD: change-me
-      # DJANGO_SUPERUSER_EMAIL: admin@example.com
 
     volumes:
       - spook-data:/app/data

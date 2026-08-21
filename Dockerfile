@@ -8,7 +8,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 # System deps kept minimal - sqlite3 lib ships with the Python base image already.
-RUN apk add --no-cache curl
+# tzdata is required for the TZ env var to have any effect in Alpine.
+RUN apk add --no-cache curl tzdata
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
